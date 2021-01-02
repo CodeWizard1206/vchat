@@ -236,9 +236,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 FloatingActionButton(
                   onPressed: () {
                     if (_numberController.text.length == 10) {
+                      setState(() {
+                        this.isLoading = true;
+                      });
                       String phoneNumber =
                           this._codeController.text + _numberController.text;
-                      print(phoneNumber);
                       loggingIn(phoneNumber);
                     }
                   },
@@ -275,11 +277,25 @@ class _LoginScreenState extends State<LoginScreen> {
         phoneNumber: phoneNumber,
         verificationCompleted: (credentials) async {
           print(credentials.smsCode);
+          String smsCode = credentials.smsCode;
+          _one.text = smsCode.substring(0, 1);
+          _two.text = smsCode.substring(1, 2);
+          _three.text = smsCode.substring(2, 3);
+          _four.text = smsCode.substring(3, 4);
+          _five.text = smsCode.substring(4, 5);
+          _six.text = smsCode.substring(5, 6);
+          setState(() {
+            this.isLoading = true;
+          });
+
           var _result = await _auth.signInWithCredential(credentials);
           var _user = _result.user;
 
           if (_user != null) {
             Navigator.of(context).pop();
+            setState(() {
+              this.isLoading = false;
+            });
             Navigator.of(context).popAndPushNamed('/home');
           }
         },
@@ -287,59 +303,153 @@ class _LoginScreenState extends State<LoginScreen> {
           print(exception.phoneNumber);
         },
         codeSent: (verifyID, resendToken) async {
-          showDialog(
+          setState(() {
+            this.isLoading = false;
+          });
+          showModalBottomSheet(
             context: context,
-            barrierDismissible: false,
-            builder: (context) => AlertDialog(
-              title: Text('enter the otp...'),
-              content: Container(
-                width: (MediaQuery.of(context).size.width - 120),
-                child: Row(
-                  children: [
-                    textField(_one),
-                    textField(_two),
-                    textField(_three),
-                    textField(_four),
-                    textField(_five),
-                    textField(_six),
-                    Expanded(
-                      child: SizedBox(),
-                    ),
-                  ],
-                ),
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
               ),
-              actions: [
-                FlatButton(
-                  onPressed: () async {
-                    final String code = _otp.text.trim();
-                    print(code);
-                    print(verifyID);
-                    AuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verifyID,
-                      smsCode: code,
-                    );
+            ),
+            builder: (context) {
+              return Wrap(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5.0,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        AnimatedPadding(
+                          duration: Duration(
+                            milliseconds: 150,
+                          ),
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom !=
+                                    0
+                                ? MediaQuery.of(context).viewInsets.bottom - 45
+                                : 8,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              textField(_one),
+                              textField(_two),
+                              textField(_three),
+                              textField(_four),
+                              textField(_five),
+                              textField(_six),
+                              Expanded(
+                                child: SizedBox(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: FlatButton(
+                            onPressed: () async {
+                              setState(() {
+                                this.isLoading = true;
+                              });
+                              AuthCredential credential =
+                                  PhoneAuthProvider.credential(
+                                verificationId: verifyID,
+                                smsCode: '',
+                              );
 
-                    var _result = await _auth.signInWithCredential(credential);
-                    var _user = _result.user;
+                              var _result =
+                                  await _auth.signInWithCredential(credential);
+                              var _user = _result.user;
 
-                    if (_user != null) {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).popAndPushNamed('/home');
-                    }
-                  },
-                  color: Constant.kPrimaryColor,
-                  child: Text(
-                    'submit...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26.0,
-                      color: Colors.white,
+                              if (_user != null) {
+                                Navigator.of(context).pop();
+                                Navigator.of(context).popAndPushNamed('/home');
+                              }
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'VERIFY',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Constant.kPrimaryColor,
+                                  ),
+                                ),
+                                Icon(
+                                  FlutterIcons.angle_right_faw5s,
+                                  color: Constant.kPrimaryColor,
+                                ),
+                              ],
+                            ),
+                            color: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10.0,
+                              horizontal: 14.0,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            },
           );
+          // showDialog(
+          //   context: context,
+          //   barrierDismissible: false,
+          //   builder: (context) => AlertDialog(
+          //     title: Text('enter the otp...'),
+          //     content: Container(
+          //       width: (MediaQuery.of(context).size.width - 120),
+          //       child: Row(
+          //         children: [
+          //         ],
+          //       ),
+          //     ),
+          //     actions: [
+          //       FlatButton(
+          //         onPressed: () async {
+          //           final String code = _otp.text.trim();
+          //           print(code);
+          //           print(verifyID);
+          // AuthCredential credential = PhoneAuthProvider.credential(
+          //   verificationId: verifyID,
+          //   smsCode: code,
+          // );
+
+          // var _result = await _auth.signInWithCredential(credential);
+          // var _user = _result.user;
+
+          // if (_user != null) {
+          //   Navigator.of(context).pop();
+          //   Navigator.of(context).popAndPushNamed('/home');
+          // }
+          //         },
+          //         color: Constant.kPrimaryColor,
+          //         child: Text(
+          //           'submit...',
+          //           style: TextStyle(
+          //             fontWeight: FontWeight.bold,
+          //             fontSize: 26.0,
+          //             color: Colors.white,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // );
         },
         codeAutoRetrievalTimeout: (timeout) {},
       );
@@ -359,7 +469,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextFormField(
             controller: controller,
             keyboardType: TextInputType.number,
-            obscureText: true,
+            style: TextStyle(
+              fontSize: 22.0,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
             autofocus: true,
             decoration: InputDecoration(
