@@ -260,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void loggingIn(String phoneNumber) async {
-    TextEditingController _otp = TextEditingController();
+    // TextEditingController _otp = TextEditingController();
     TextEditingController _one = TextEditingController();
     TextEditingController _two = TextEditingController();
     TextEditingController _three = TextEditingController();
