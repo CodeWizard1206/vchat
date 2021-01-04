@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _numberController;
   List<DropdownMenuItem> _code = [];
   bool isLoading = false;
+  FocusNode _numberFocus = FocusNode();
 
   @override
   void initState() {
@@ -120,8 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 6.0,
                         ),
                         Expanded(
-                          flex: 4,
+                          flex: 5,
                           child: TextFormField(
+                            focusNode: _numberFocus,
                             controller: this._numberController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
@@ -142,6 +144,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             maxLines: 1,
                             onChanged: (value) {},
+                            onFieldSubmitted: (value) {
+                              if (_numberController.text.length == 10) {
+                                setState(() {
+                                  this.isLoading = true;
+                                });
+                                String phoneNumber = this._codeController.text +
+                                    _numberController.text;
+                                loggingIn(phoneNumber);
+                              }
+                            },
                           ),
                         ),
                       ],
@@ -234,8 +246,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 FloatingActionButton(
+                  elevation: 0,
                   onPressed: () {
                     if (_numberController.text.length == 10) {
+                      _numberFocus.unfocus();
                       setState(() {
                         this.isLoading = true;
                       });
@@ -246,10 +260,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Icon(
                     FlutterIcons.angle_right_faw5s,
-                    color: Colors.white,
-                    size: 38,
+                    color: Constant.kPrimaryColor,
+                    size: 78,
                   ),
-                  backgroundColor: Constant.kPrimaryColor,
+                  backgroundColor: Colors.transparent,
                 ),
               ],
             ),
@@ -267,6 +281,14 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController _four = TextEditingController();
     TextEditingController _five = TextEditingController();
     TextEditingController _six = TextEditingController();
+
+    FocusNode _focusOne = FocusNode();
+    FocusNode _focusTwo = FocusNode();
+    FocusNode _focusThree = FocusNode();
+    FocusNode _focusFour = FocusNode();
+    FocusNode _focusFive = FocusNode();
+    FocusNode _focusSix = FocusNode();
+
     try {
       await Firebase.initializeApp();
       var _auth = FirebaseAuth.instance;
@@ -278,26 +300,34 @@ class _LoginScreenState extends State<LoginScreen> {
         verificationCompleted: (credentials) async {
           print(credentials.smsCode);
           String smsCode = credentials.smsCode;
-          _one.text = smsCode.substring(0, 1);
-          _two.text = smsCode.substring(1, 2);
-          _three.text = smsCode.substring(2, 3);
-          _four.text = smsCode.substring(3, 4);
-          _five.text = smsCode.substring(4, 5);
-          _six.text = smsCode.substring(5, 6);
-          setState(() {
-            this.isLoading = true;
-          });
-
           var _result = await _auth.signInWithCredential(credentials);
           var _user = _result.user;
+          Future.delayed(
+            Duration(
+              seconds: 8,
+            ),
+            () {
+              _one.text = smsCode.substring(0, 1);
+              _two.text = smsCode.substring(1, 2);
+              _three.text = smsCode.substring(2, 3);
+              _four.text = smsCode.substring(3, 4);
+              _five.text = smsCode.substring(4, 5);
+              _six.text = smsCode.substring(5, 6);
+              Future.delayed(Duration(seconds: 2), () {
+                setState(() {
+                  this.isLoading = true;
+                });
 
-          if (_user != null) {
-            Navigator.of(context).pop();
-            setState(() {
-              this.isLoading = false;
-            });
-            Navigator.of(context).popAndPushNamed('/home');
-          }
+                if (_user != null) {
+                  Navigator.of(context).pop();
+                  setState(() {
+                    this.isLoading = false;
+                  });
+                  Navigator.of(context).popAndPushNamed('/home');
+                }
+              });
+            },
+          );
         },
         verificationFailed: (exception) async {
           print(exception.phoneNumber);
@@ -322,10 +352,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 5.0,
                     ),
+                    width: MediaQuery.of(context).size.width,
+                    constraints: BoxConstraints(
+                      maxHeight: (MediaQuery.of(context).size.height / 2),
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
+                        SizedBox(
+                          height: 15.0,
+                        ),
                         AnimatedPadding(
                           duration: Duration(
                             milliseconds: 150,
@@ -338,15 +376,39 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              textField(_one),
-                              textField(_two),
-                              textField(_three),
-                              textField(_four),
-                              textField(_five),
-                              textField(_six),
                               Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_one, _focusOne, _focusTwo),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_two, _focusTwo, _focusThree),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_three, _focusThree, _focusFour),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_four, _focusFour, _focusFive),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_five, _focusFive, _focusSix),
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(),
+                              ),
+                              textField(_six, _focusSix, null),
+                              Expanded(
+                                flex: 1,
                                 child: SizedBox(),
                               ),
                             ],
@@ -356,22 +418,43 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: FlatButton(
                             onPressed: () async {
-                              setState(() {
-                                this.isLoading = true;
-                              });
-                              AuthCredential credential =
-                                  PhoneAuthProvider.credential(
-                                verificationId: verifyID,
-                                smsCode: '',
-                              );
+                              if (_one.text != '' &&
+                                  _two.text != '' &&
+                                  _three.text != '' &&
+                                  _four.text != '' &&
+                                  _five.text != '' &&
+                                  _six.text != '') {
+                                setState(() {
+                                  this.isLoading = true;
+                                });
+                                String smsCode = _one.text +
+                                    _two.text +
+                                    _three.text +
+                                    _four.text +
+                                    _five.text +
+                                    _six.text;
+                                AuthCredential credential =
+                                    PhoneAuthProvider.credential(
+                                  verificationId: verifyID,
+                                  smsCode: smsCode,
+                                );
 
-                              var _result =
-                                  await _auth.signInWithCredential(credential);
-                              var _user = _result.user;
+                                var _result = await _auth
+                                    .signInWithCredential(credential);
+                                var _user = _result.user;
 
-                              if (_user != null) {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).popAndPushNamed('/home');
+                                if (_user != null) {
+                                  setState(() {
+                                    this.isLoading = false;
+                                  });
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context)
+                                      .popAndPushNamed('/home');
+                                }
+                              } else {
+                                setState(() {
+                                  this.isLoading = false;
+                                });
                               }
                             },
                             child: Row(
@@ -458,46 +541,51 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget textField(TextEditingController controller) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Expanded(
-          child: SizedBox(),
+  Widget textField(TextEditingController controller, FocusNode currentFocus,
+      FocusNode nextFocus) {
+    return Expanded(
+      flex: 2,
+      child: TextFormField(
+        controller: controller,
+        focusNode: currentFocus,
+        keyboardType: TextInputType.number,
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.bold,
         ),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            style: TextStyle(
-              fontSize: 22.0,
-              fontWeight: FontWeight.bold,
+        textAlign: TextAlign.center,
+        autofocus: false,
+        decoration: InputDecoration(
+          counterText: '',
+          hintText: '',
+          filled: true,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Constant.kPrimaryColor,
+              width: 3,
             ),
-            textAlign: TextAlign.center,
-            autofocus: true,
-            decoration: InputDecoration(
-              counterText: '',
-              hintText: 'enter your otp...',
-              filled: true,
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Constant.kPrimaryColor,
-                  width: 2,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Constant.kPrimaryColor,
-                  width: 2,
-                ),
-              ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Constant.kPrimaryColor,
+              width: 3,
             ),
-            maxLines: 1,
-            maxLength: 1,
-            onChanged: (value) {},
           ),
         ),
-      ],
+        maxLines: 1,
+        maxLength: 1,
+        onChanged: (value) {
+          if (value != '') {
+            if (currentFocus.hasPrimaryFocus) {
+              if (nextFocus != null) {
+                if (!nextFocus.hasFocus) {
+                  nextFocus.requestFocus();
+                }
+              }
+            }
+          }
+        },
+      ),
     );
   }
 }
