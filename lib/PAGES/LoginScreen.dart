@@ -544,7 +544,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget textField(TextEditingController controller, FocusNode currentFocus,
       FocusNode nextFocus) {
     return Expanded(
-      flex: 2,
+      flex: 4,
       child: TextFormField(
         controller: controller,
         focusNode: currentFocus,
