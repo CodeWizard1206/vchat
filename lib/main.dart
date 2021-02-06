@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/PAGES/LoginScreen.dart';
 import 'package:vchat/PAGES/Messages.dart';
+import 'package:vchat/PAGES/UserInfoScreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => LoginScreen(),
+        '/infoPost': (context) => UserInfoScreen(),
         '/home': (context) => Messages(),
       },
       initialRoute: '/',

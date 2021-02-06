@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.1
+  cupertino_icons: ^1.0.0
   flutter_icons: ^1.1.0
   intl: ^0.16.1
   shared_preferences: ^0.5.8
@@ -35,8 +35,6 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  integration_test:
     sdk: flutter
 
 flutter:
