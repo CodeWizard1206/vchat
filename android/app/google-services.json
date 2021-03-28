@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "297018270721-538q420og877gc6p2uibe8lv8kqg8jid.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.codewizard.vchat",
-            "certificate_hash": "e6a88248d46c52a115f7a6462c27ffd6d36c06d2"
-          }
-        },
-        {
           "client_id": "297018270721-pvf2blnttpus1eperdu4i7igdlfu898k.apps.googleusercontent.com",
           "client_type": 3
         }
