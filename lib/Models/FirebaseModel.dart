@@ -15,12 +15,10 @@ class FirebaseModel {
       User _user = _result.user;
 
       if (_user != null) {
-        print(_user.uid);
-
         DocumentSnapshot userData =
             await _firestore.collection('userDatabase').doc(_user.uid).get();
 
-        if (userData != null) {
+        if (userData.data() != null) {
           Constant.superUser.uid = _user.uid;
           Constant.superUser.contact = userData.data()['contact'];
           Constant.superUser.username = userData.data()['username'];
@@ -34,7 +32,7 @@ class FirebaseModel {
         return false;
       }
     } catch (e) {
-      print(e.toString());
+      print('error :' + e.toString());
       return false;
     }
   }

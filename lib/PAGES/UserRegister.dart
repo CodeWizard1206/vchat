@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:vchat/Constants.dart';
@@ -18,6 +20,7 @@ class _UserRegisterState extends State<UserRegister> {
   bool started;
   FocusNode _focus;
   TextEditingController _controller;
+  File userImage;
 
   @override
   void initState() {
@@ -28,6 +31,12 @@ class _UserRegisterState extends State<UserRegister> {
   }
 
   Future<void> setUserImage() async {}
+
+  Future<void> register() async {
+    if (_focus.hasPrimaryFocus) {
+      _focus.unfocus();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +68,7 @@ class _UserRegisterState extends State<UserRegister> {
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
-                      autofocus: false,
+                      autofocus: Constant.superUser.username == '',
                       decoration: InputDecoration(
                         counterText: '',
                         hintText: 'who are you...',
@@ -105,7 +114,48 @@ class _UserRegisterState extends State<UserRegister> {
                         ),
                         FloatingActionButton(
                           backgroundColor: Constant.kPrimaryColor,
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
+                              ),
+                              builder: (_) => Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    (Constant.superUser.image != '' ||
+                                            userImage != null)
+                                        ? ListTile(
+                                            leading:
+                                                Icon(FlutterIcons.close_faw),
+                                            title: Text('Remove Image'),
+                                            onTap: () {
+                                              Constant.superUser.image = '';
+                                              userImage = null;
+                                            },
+                                          )
+                                        : SizedBox(),
+                                    ListTile(
+                                      leading: Icon(FlutterIcons.camera_faw),
+                                      title: Text('Take a Image'),
+                                      onTap: () {},
+                                    ),
+                                    ListTile(
+                                      leading: Icon(FlutterIcons.photo_faw),
+                                      title: Text('Add a Image'),
+                                      onTap: () {},
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                           child: Icon(
                             FlutterIcons.add_a_photo_mdi,
                             color: Colors.white,
@@ -118,11 +168,7 @@ class _UserRegisterState extends State<UserRegister> {
                 SizedBox(height: 15.0),
                 RawMaterialButton(
                   fillColor: Constant.kPrimaryColor,
-                  onPressed: () {
-                    if (_focus.hasPrimaryFocus) {
-                      _focus.unfocus();
-                    }
-                  },
+                  onPressed: register,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
