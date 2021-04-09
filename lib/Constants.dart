@@ -8,7 +8,7 @@ class Constant {
   static final kComponentBgColor = Colors.grey[200];
   static final UserModel superUser = UserModel(
     contact: '',
-    image: '',
+    image: null,
     username: '',
     joinedOn: DateTime.now(),
   );

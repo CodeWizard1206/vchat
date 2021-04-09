@@ -107,9 +107,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                   Navigator.of(context).popAndPushNamed('/userRegister');
                 } else {
+                  Navigator.of(context).pop();
                   setState(() {
                     this.isLoading = false;
                   });
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Failed to verify phone number, try again!'),
+                  ));
                 }
               });
             },
@@ -181,6 +185,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() {
                       this.isLoading = false;
                     });
+                    Scaffold.of(_).showSnackBar(SnackBar(
+                      content:
+                          Text('Failed to verify phone number, try again!'),
+                    ));
                   }
                 },
               );

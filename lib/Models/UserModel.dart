@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class UserModel {
   String uid;
@@ -22,6 +23,15 @@ class UserModel {
       'username': username,
       'contact': contact,
       'joinedOn': joinedOn,
+    };
+  }
+
+  Map<String, dynamic> toJSON() {
+    return {
+      'image': image,
+      'username': username,
+      'contact': contact,
+      'joinedOn': DateFormat('yyyy-MM-dd hh:mm:ss').format(joinedOn),
     };
   }
 

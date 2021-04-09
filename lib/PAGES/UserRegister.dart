@@ -1,40 +1,110 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:vchat/Constants.dart';
+import 'package:vchat/Models/FirebaseModel.dart';
 
-class UserRegister extends StatefulWidget {
-  final userContact;
-  UserRegister({
-    Key key,
-    this.userContact,
-  }) : super(key: key);
+class UserRegister extends StatelessWidget {
+  const UserRegister({Key key}) : super(key: key);
 
   @override
-  _UserRegisterState createState() => _UserRegisterState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: UserRegisterHome(),
+    );
+  }
 }
 
-class _UserRegisterState extends State<UserRegister> {
+class UserRegisterHome extends StatefulWidget {
+  UserRegisterHome({Key key}) : super(key: key);
+
+  @override
+  _UserRegisterHomeState createState() => _UserRegisterHomeState();
+}
+
+class _UserRegisterHomeState extends State<UserRegisterHome> {
   double height, width;
   bool started;
   FocusNode _focus;
   TextEditingController _controller;
   File userImage;
+  bool isLoading;
 
   @override
   void initState() {
     started = false;
+    isLoading = false;
     _focus = FocusNode();
     _controller = TextEditingController();
+
+    if (Constant.superUser.username != '') {
+      _controller.text = Constant.superUser.username;
+    }
     super.initState();
   }
 
-  Future<void> setUserImage() async {}
+  Future<void> setUserImage(BuildContext context, PickedFile image) async {
+    if (image.path.toString().contains('.jpg') ||
+        image.path.toString().contains('.JPG') ||
+        image.path.toString().contains('.png') ||
+        image.path.toString().contains('.PNG') ||
+        image.path.toString().contains('.jpeg') ||
+        image.path.toString().contains('.JPEG')) {
+      File _cropped = await ImageCropper.cropImage(
+        sourcePath: image.path,
+        aspectRatio: CropAspectRatio(
+          ratioX: 1,
+          ratioY: 1,
+        ),
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Constant.kPrimaryColor,
+          toolbarWidgetColor: Colors.white,
+        ),
+      );
 
-  Future<void> register() async {
+      if (_cropped != null) {
+        setState(() {
+          this.userImage = _cropped;
+        });
+      }
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Image with invalid format selected!!!'),
+      ));
+    }
+  }
+
+  Future<void> register(BuildContext context) async {
     if (_focus.hasPrimaryFocus) {
       _focus.unfocus();
+    }
+
+    if (_controller.text != '') {
+      setState(() {
+        isLoading = true;
+      });
+      if (Constant.superUser.username == '') {
+        bool result = await FirebaseModel.registerUser(
+            _controller.text, userImage != null, userImage);
+
+        if (result) {
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.of(context).popAndPushNamed('/home');
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to register user, try again!'),
+          ));
+        }
+      }
     }
   }
 
@@ -45,8 +115,29 @@ class _UserRegisterState extends State<UserRegister> {
       width = MediaQuery.of(context).size.width;
       started = !started;
     }
-    return Scaffold(
-      body: SafeArea(
+    return ModalProgressHUD(
+      inAsyncCall: this.isLoading,
+      opacity: 0.5,
+      progressIndicator: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Constant.kPrimaryColor),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            'Please Wait...',
+            style: TextStyle(
+              fontFamily: 'Barty',
+              color: Colors.white,
+              fontSize: 20.0,
+            ),
+          ),
+        ],
+      ),
+      child: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             height: MediaQuery.of(context).size.height - 25,
@@ -108,13 +199,19 @@ class _UserRegisterState extends State<UserRegister> {
                           child: CircleAvatar(
                             radius: (width * 0.35),
                             backgroundColor: Colors.transparent,
-                            backgroundImage:
-                                AssetImage('assets/images/user.png'),
+                            backgroundImage: userImage != null
+                                ? FileImage(userImage)
+                                : Constant.superUser.image != null
+                                    ? NetworkImage(Constant.superUser.image)
+                                    : AssetImage('assets/images/user.png'),
                           ),
                         ),
                         FloatingActionButton(
                           backgroundColor: Constant.kPrimaryColor,
                           onPressed: () {
+                            if (_focus.hasPrimaryFocus) {
+                              _focus.unfocus();
+                            }
                             showModalBottomSheet(
                               context: context,
                               shape: RoundedRectangleBorder(
@@ -129,7 +226,7 @@ class _UserRegisterState extends State<UserRegister> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    (Constant.superUser.image != '' ||
+                                    (Constant.superUser.image != null ||
                                             userImage != null)
                                         ? ListTile(
                                             leading:
@@ -144,12 +241,34 @@ class _UserRegisterState extends State<UserRegister> {
                                     ListTile(
                                       leading: Icon(FlutterIcons.camera_faw),
                                       title: Text('Take a Image'),
-                                      onTap: () {},
+                                      onTap: () async {
+                                        ImagePicker _picker = ImagePicker();
+                                        PickedFile _image =
+                                            await _picker.getImage(
+                                          source: ImageSource.camera,
+                                        );
+
+                                        if (_image != null) {
+                                          setUserImage(context, _image);
+                                        }
+                                        Navigator.of(_).pop();
+                                      },
                                     ),
                                     ListTile(
                                       leading: Icon(FlutterIcons.photo_faw),
                                       title: Text('Add a Image'),
-                                      onTap: () {},
+                                      onTap: () async {
+                                        ImagePicker _picker = ImagePicker();
+                                        PickedFile _image =
+                                            await _picker.getImage(
+                                          source: ImageSource.gallery,
+                                        );
+
+                                        if (_image != null) {
+                                          setUserImage(context, _image);
+                                        }
+                                        Navigator.of(_).pop();
+                                      },
                                     )
                                   ],
                                 ),
@@ -168,7 +287,9 @@ class _UserRegisterState extends State<UserRegister> {
                 SizedBox(height: 15.0),
                 RawMaterialButton(
                   fillColor: Constant.kPrimaryColor,
-                  onPressed: register,
+                  onPressed: () {
+                    register(context);
+                  },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   ),
