@@ -6,7 +6,7 @@ class UserModel {
   String image;
   String username;
   String contact;
-  var joinedOn;
+  DateTime joinedOn;
 
   UserModel({
     this.uid,

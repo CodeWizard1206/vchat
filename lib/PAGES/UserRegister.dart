@@ -15,9 +15,19 @@ class UserRegister extends StatefulWidget {
 
 class _UserRegisterState extends State<UserRegister> {
   double height, width;
-  bool started = false;
-  final FocusNode _focus = FocusNode();
-  final TextEditingController _controller = TextEditingController();
+  bool started;
+  FocusNode _focus;
+  TextEditingController _controller;
+
+  @override
+  void initState() {
+    started = false;
+    _focus = FocusNode();
+    _controller = TextEditingController();
+    super.initState();
+  }
+
+  Future<void> setUserImage() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +50,12 @@ class _UserRegisterState extends State<UserRegister> {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Center(
                     child: TextFormField(
+                      cursorColor: Constant.kPrimaryColor,
                       controller: _controller,
                       focusNode: _focus,
                       style: TextStyle(
-                        fontSize: 32.0,
+                        fontFamily: 'Barty',
+                        fontSize: 42.0,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -51,6 +63,7 @@ class _UserRegisterState extends State<UserRegister> {
                       decoration: InputDecoration(
                         counterText: '',
                         hintText: 'who are you...',
+                        hintStyle: TextStyle(),
                         filled: false,
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -85,6 +98,9 @@ class _UserRegisterState extends State<UserRegister> {
                           tag: 'profile',
                           child: CircleAvatar(
                             radius: (width * 0.35),
+                            backgroundColor: Colors.transparent,
+                            backgroundImage:
+                                AssetImage('assets/images/user.png'),
                           ),
                         ),
                         FloatingActionButton(
@@ -113,8 +129,8 @@ class _UserRegisterState extends State<UserRegister> {
                   elevation: 8.0,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 12.0,
-                      horizontal: 15,
+                      vertical: 9.0,
+                      horizontal: 19,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -122,15 +138,15 @@ class _UserRegisterState extends State<UserRegister> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'CONTINUE',
+                          'Continue',
                           style: TextStyle(
-                            fontFamily: 'Ubuntu',
+                            fontFamily: 'Barty',
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 18.0,
+                            fontSize: 28.0,
                           ),
                         ),
-                        SizedBox(width: 6.0),
+                        SizedBox(width: 9.0),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/PAGES/LoginScreen.dart';
 import 'package:vchat/PAGES/Messages.dart';
-import 'package:vchat/PAGES/UserInfoScreen.dart';
 import 'package:vchat/PAGES/UserRegister.dart';
 
 void main() async {
@@ -36,7 +35,6 @@ class MyApp extends StatelessWidget {
       initialRoute: this.defaultRoute,
       routes: {
         '/': (context) => LoginScreen(),
-        '/infoPost': (context) => UserInfoScreen(),
         '/home': (context) => Messages(),
         '/userRegister': (context) => UserRegister(),
       },
