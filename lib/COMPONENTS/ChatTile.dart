@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/ChatTileModel.dart';
 
 class ChatTile extends StatelessWidget {
@@ -35,7 +36,7 @@ class ChatTile extends StatelessWidget {
                   ),
                   Text(
                     DateFormat.jm().format(
-                      data.msgTime.toDate(),
+                      data.msgTime,
                     ),
                   ),
                 ],
@@ -46,9 +47,15 @@ class ChatTile extends StatelessWidget {
                     child: Text(data.message),
                   ),
                   Visibility(
-                    visible: data.unreadCount > 0,
-                    child: Text(
-                      data.unreadCount.toString(),
+                    visible: data.unread,
+                    child: Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(30.0),
+                      color: Constant.kPrimaryColor,
+                      child: Container(
+                        height: 5.0,
+                        width: 5.0,
+                      ),
                     ),
                   ),
                 ],

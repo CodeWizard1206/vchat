@@ -1,59 +1,68 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ChatTileModel {
+  String uid;
   String senderID;
   String profileImage;
   String contactName;
-  var msgTime;
+  DateTime msgTime;
   String message;
-  int unreadCount;
+  bool unread;
 
   ChatTileModel({
+    this.uid,
     this.senderID,
     this.profileImage,
     this.contactName,
     this.msgTime,
     this.message,
-    this.unreadCount,
+    this.unread,
   });
 
   ChatTileModel copyWith({
+    String uid,
     String senderID,
     String profileImage,
     String contactName,
     var msgTime,
     String message,
-    int unreadCount,
+    bool unread,
   }) {
     return ChatTileModel(
+      uid: uid ?? this.uid,
       senderID: senderID ?? this.senderID,
       profileImage: profileImage ?? this.profileImage,
       contactName: contactName ?? this.contactName,
       msgTime: msgTime ?? this.msgTime,
       message: message ?? this.message,
-      unreadCount: unreadCount ?? this.unreadCount,
+      unread: unread ?? this.unread,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'senderID': senderID,
+      'contact': senderID,
       'profileImage': profileImage,
       'contactName': contactName,
       'msgTime': msgTime,
       'message': message,
-      'unreadCount': unreadCount,
+      'unread': unread,
     };
   }
 
-  factory ChatTileModel.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
+  factory ChatTileModel.fromMap(DocumentSnapshot doc) {
+    if (doc == null) return null;
+
+    Map<String, dynamic> map = doc.data();
 
     return ChatTileModel(
-      senderID: map['senderID'],
+      uid: doc.id,
+      senderID: map['contact'],
       profileImage: map['profileImage'],
       contactName: map['contactName'],
       msgTime: map['msgTime'],
       message: map['message'],
-      unreadCount: map['unreadCount'],
+      unread: map['unread'],
     );
   }
 }

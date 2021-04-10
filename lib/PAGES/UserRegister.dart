@@ -104,6 +104,26 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
             content: Text('Failed to register user, try again!'),
           ));
         }
+      } else {
+        if (Constant.superUser.username != _controller.text ||
+            userImage != null) {
+          bool result = await FirebaseModel.updateUser(
+              _controller.text, userImage != null, userImage);
+
+          if (result) {
+            setState(() {
+              isLoading = false;
+            });
+            Navigator.of(context).popAndPushNamed('/home');
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text('Failed to verify user, try again!'),
+            ));
+          }
+        }
       }
     }
   }

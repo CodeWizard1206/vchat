@@ -85,4 +85,102 @@ class FirebaseModel {
       return false;
     }
   }
+
+  static Future<bool> updateUser(
+      String username, bool uploadImage, File image) async {
+    String imageURL = Constant.superUser.image;
+    String imageName =
+        (Constant.superUser.uid + '.' + (image.path.split('.').last));
+
+    try {
+      if (uploadImage) {
+        //Deleting Previous Image if any
+        if (imageURL != null) {
+          try {
+            await _storage
+                .ref()
+                .child('profileImages/' + Constant.superUser.uid + '.png')
+                .delete();
+          } catch (e) {
+            print(e);
+            try {
+              await _storage
+                  .ref()
+                  .child('profileImages/' + Constant.superUser.uid + '.PNG')
+                  .delete();
+            } catch (e) {
+              print(e);
+              try {
+                await _storage
+                    .ref()
+                    .child('profileImages/' + Constant.superUser.uid + '.jpg')
+                    .delete();
+              } catch (e) {
+                print(e);
+                try {
+                  await _storage
+                      .ref()
+                      .child('profileImages/' + Constant.superUser.uid + '.JPG')
+                      .delete();
+                } catch (e) {
+                  print(e);
+                  try {
+                    await _storage
+                        .ref()
+                        .child(
+                            'profileImages/' + Constant.superUser.uid + '.JPEG')
+                        .delete();
+                  } catch (e) {
+                    print(e);
+                    try {
+                      await _storage
+                          .ref()
+                          .child('profileImages/' +
+                              Constant.superUser.uid +
+                              '.jpeg')
+                          .delete();
+                    } catch (e) {
+                      print(e);
+                      return false;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        //Uploading New Image to Firebase Storage
+        await _storage
+            .ref()
+            .child('profileImages/' + imageName)
+            .putFile(image)
+            .onComplete;
+        var uri = await _storage
+            .ref()
+            .child('profileImages/' + imageName)
+            .getDownloadURL();
+        imageURL = uri.toString();
+      }
+
+      //Updating User Details on Firebase Database
+      _firestore.collection('userDatabase').doc(Constant.superUser.uid).update({
+        'username': username,
+        'image': imageURL,
+      });
+
+      Constant.superUser.username = username;
+      Constant.superUser.image = imageURL;
+
+      SharedPreferences _cache = await SharedPreferences.getInstance();
+
+      _cache.setBool('loggedIn', true);
+      _cache.setString('userData', json.encode(Constant.superUser.toJSON()));
+
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
 }
