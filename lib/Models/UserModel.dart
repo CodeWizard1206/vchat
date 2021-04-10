@@ -43,7 +43,7 @@ class UserModel {
       image: map['image'],
       username: map['username'],
       contact: map['contact'],
-      joinedOn: map['joinedOn'],
+      joinedOn: map['joinedOn'].toDate(),
     );
   }
 }

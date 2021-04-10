@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/ChatTileModel.dart';
+import 'package:vchat/Models/UserModel.dart';
 
 class FirebaseModel {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -184,6 +185,17 @@ class FirebaseModel {
       print(e.toString());
       return false;
     }
+  }
+
+  static Future<List<UserModel>> getContactList() async {
+    List<Map<String, dynamic>> data = [];
+
+    var doc =
+        await _firestore.collection('userDatabase').orderBy('username').get();
+
+    List<UserModel> users = doc.docs.map((e) => UserModel.fromDoc(e)).toList();
+
+    return users;
   }
 
   static Stream<List<ChatTileModel>> getAllChats() {
