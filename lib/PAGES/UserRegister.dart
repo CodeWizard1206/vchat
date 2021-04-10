@@ -32,11 +32,13 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
   TextEditingController _controller;
   File userImage;
   bool isLoading;
+  bool removeImage;
 
   @override
   void initState() {
     started = false;
     isLoading = false;
+    removeImage = false;
     _focus = FocusNode();
     _controller = TextEditingController();
 
@@ -69,6 +71,7 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
       if (_cropped != null) {
         setState(() {
           this.userImage = _cropped;
+          removeImage = true;
         });
       }
     } else {
@@ -108,7 +111,7 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
         if (Constant.superUser.username != _controller.text ||
             userImage != null) {
           bool result = await FirebaseModel.updateUser(
-              _controller.text, userImage != null, userImage);
+              _controller.text, userImage != null, userImage, removeImage);
 
           if (result) {
             setState(() {
@@ -253,8 +256,11 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
                                                 Icon(FlutterIcons.close_faw),
                                             title: Text('Remove Image'),
                                             onTap: () {
-                                              Constant.superUser.image = '';
-                                              userImage = null;
+                                              setState(() {
+                                                removeImage = true;
+                                                Constant.superUser.image = '';
+                                                userImage = null;
+                                              });
                                             },
                                           )
                                         : SizedBox(),

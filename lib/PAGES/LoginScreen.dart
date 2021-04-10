@@ -6,14 +6,25 @@ import 'package:vchat/COMPONENTS/OTPSheet.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/FirebaseModel.dart';
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({Key key}) : super(key: key);
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: LoginScreenHome(),
+    );
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenHome extends StatefulWidget {
+  LoginScreenHome({Key key}) : super(key: key);
+
+  @override
+  _LoginScreenHomeState createState() => _LoginScreenHomeState();
+}
+
+class _LoginScreenHomeState extends State<LoginScreenHome> {
   TextEditingController _codeController;
   TextEditingController _numberController;
   List<DropdownMenuItem> _code = [];
@@ -166,11 +177,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         _four.text +
                         _five.text +
                         _six.text;
-                    AuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verifyID,
-                      smsCode: smsCode,
-                    );
-
+                    AuthCredential credential;
+                    try {
+                      credential = PhoneAuthProvider.credential(
+                        verificationId: verifyID,
+                        smsCode: smsCode,
+                      );
+                    } catch (e) {
+                      print(e.toString());
+                      setState(() {
+                        this.isLoading = false;
+                      });
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content:
+                            Text('Failed to verify phone number, try again!'),
+                      ));
+                    }
                     bool result = await FirebaseModel.getUserAuth(
                         credential, phoneNumber);
 
@@ -185,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() {
                       this.isLoading = false;
                     });
-                    Scaffold.of(_).showSnackBar(SnackBar(
+                    Scaffold.of(context).showSnackBar(SnackBar(
                       content:
                           Text('Failed to verify phone number, try again!'),
                     ));
@@ -207,176 +229,174 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ModalProgressHUD(
-        inAsyncCall: this.isLoading,
-        opacity: 0.5,
-        progressIndicator: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Constant.kPrimaryColor),
+    return ModalProgressHUD(
+      inAsyncCall: this.isLoading,
+      opacity: 0.5,
+      progressIndicator: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(Constant.kPrimaryColor),
+          ),
+          SizedBox(
+            height: 13,
+          ),
+          Text(
+            'Please Wait...',
+            style: TextStyle(
+              fontFamily: 'Barty',
+              color: Colors.white,
+              fontSize: 20.0,
             ),
-            SizedBox(
-              height: 13,
-            ),
-            Text(
-              'Please Wait...',
-              style: TextStyle(
-                fontFamily: 'Barty',
-                color: Colors.white,
-                fontSize: 20.0,
-              ),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height - 25,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    fit: BoxFit.fitWidth,
-                  ),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: DropdownButtonFormField(
-                                decoration: InputDecoration(
-                                  hintText: 'cc',
-                                  filled: true,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Constant.kPrimaryColor,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Constant.kPrimaryColor,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(50.0),
-                                  ),
-                                ),
-                                value: this._codeController.text,
-                                items: this._code,
-                                onChanged: (value) {
-                                  this._codeController.text = value;
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: 6.0,
-                            ),
-                            Expanded(
-                              flex: 5,
-                              child: TextFormField(
-                                cursorColor: Constant.kPrimaryColor,
-                                focusNode: _numberFocus,
-                                controller: this._numberController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  counterText: '',
-                                  hintText: 'enter your number...',
-                                  filled: true,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Constant.kPrimaryColor,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(40.0),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Constant.kPrimaryColor,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(40.0),
-                                  ),
-                                ),
-                                maxLength: 10,
-                                maxLines: 1,
-                                onChanged: (value) {},
-                                onFieldSubmitted: (value) {
-                                  if (_numberController.text.length == 10) {
-                                    setState(() {
-                                      this.isLoading = true;
-                                    });
-                                    String phoneNumber =
-                                        this._codeController.text +
-                                            _numberController.text;
-                                    loggingIn(phoneNumber);
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  RawMaterialButton(
-                    fillColor: Constant.kPrimaryColor,
-                    elevation: 0.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40.0),
-                    ),
-                    onPressed: () {
-                      if (_numberController.text.length == 10) {
-                        _numberFocus.unfocus();
-                        setState(() {
-                          this.isLoading = true;
-                        });
-                        String phoneNumber =
-                            this._codeController.text + _numberController.text;
-                        loggingIn(phoneNumber);
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16.0,
-                        top: 5.0,
-                        bottom: 5.0,
-                      ),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height - 25,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.fitWidth,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Let\'s Start',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white, //Constant.kPrimaryColor,
-                              fontFamily: 'Haydes',
-                              fontSize: 38.0,
+                          Expanded(
+                            flex: 2,
+                            child: DropdownButtonFormField(
+                              decoration: InputDecoration(
+                                hintText: 'cc',
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Constant.kPrimaryColor,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(50.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Constant.kPrimaryColor,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(50.0),
+                                ),
+                              ),
+                              value: this._codeController.text,
+                              items: this._code,
+                              onChanged: (value) {
+                                this._codeController.text = value;
+                              },
                             ),
                           ),
                           SizedBox(
-                            width: 5.0,
+                            width: 6.0,
                           ),
-                          Icon(
-                            FlutterIcons.angle_right_faw5s,
-                            color: Colors.white, //Constant.kPrimaryColor,
-                            size: 48,
+                          Expanded(
+                            flex: 5,
+                            child: TextFormField(
+                              cursorColor: Constant.kPrimaryColor,
+                              focusNode: _numberFocus,
+                              controller: this._numberController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                counterText: '',
+                                hintText: 'enter your number...',
+                                filled: true,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Constant.kPrimaryColor,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(40.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Constant.kPrimaryColor,
+                                    width: 2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(40.0),
+                                ),
+                              ),
+                              maxLength: 10,
+                              maxLines: 1,
+                              onChanged: (value) {},
+                              onFieldSubmitted: (value) {
+                                if (_numberController.text.length == 10) {
+                                  setState(() {
+                                    this.isLoading = true;
+                                  });
+                                  String phoneNumber =
+                                      this._codeController.text +
+                                          _numberController.text;
+                                  loggingIn(phoneNumber);
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
                     ),
+                  ],
+                ),
+                RawMaterialButton(
+                  fillColor: Constant.kPrimaryColor,
+                  elevation: 0.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40.0),
                   ),
-                ],
-              ),
+                  onPressed: () {
+                    if (_numberController.text.length == 10) {
+                      _numberFocus.unfocus();
+                      setState(() {
+                        this.isLoading = true;
+                      });
+                      String phoneNumber =
+                          this._codeController.text + _numberController.text;
+                      loggingIn(phoneNumber);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      top: 5.0,
+                      bottom: 5.0,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Let\'s Start',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, //Constant.kPrimaryColor,
+                            fontFamily: 'Haydes',
+                            fontSize: 38.0,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Icon(
+                          FlutterIcons.angle_right_faw5s,
+                          color: Colors.white, //Constant.kPrimaryColor,
+                          size: 48,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

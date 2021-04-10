@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/ChatTileModel.dart';
-import 'package:vchat/Models/EncrypterDecrypter.dart';
+import 'package:vchat/Models/FirebaseModel.dart';
 
 class Messages extends StatelessWidget {
   const Messages({Key key}) : super(key: key);
@@ -16,9 +15,9 @@ class Messages extends StatelessWidget {
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          // child:StreamProvider<List<ChatTileModel>>(
-          //   create: (_) => ,
-          //   child: MessagesHome()),
+          child: StreamProvider<List<ChatTileModel>>(
+              create: (_) => FirebaseModel.getAllChats(),
+              child: MessagesHome()),
         ),
       ),
     );
@@ -35,6 +34,8 @@ class MessagesHome extends StatefulWidget {
 class _MessagesHomeState extends State<MessagesHome> {
   @override
   Widget build(BuildContext context) {
+    var _chats = Provider.of<List<ChatTileModel>>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -48,6 +49,22 @@ class _MessagesHomeState extends State<MessagesHome> {
           ),
           child: Row(
             children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(30.0),
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: Constant.superUser.image != null
+                        ? NetworkImage(Constant.superUser.image)
+                        : AssetImage('assets/images/user.png'),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
               Expanded(
                 child: Text(
                   'Chats',
@@ -58,9 +75,11 @@ class _MessagesHomeState extends State<MessagesHome> {
                   ),
                 ),
               ),
-              InkWell(
-                child: Material(
-                  color: Constant.kComponentBgColor,
+              Material(
+                color: Constant.kComponentBgColor,
+                borderRadius: BorderRadius.circular(16.0),
+                child: InkWell(
+                  onTap: () {},
                   borderRadius: BorderRadius.circular(16.0),
                   child: Container(
                     padding: const EdgeInsets.all(
@@ -77,11 +96,12 @@ class _MessagesHomeState extends State<MessagesHome> {
               SizedBox(
                 width: 10.0,
               ),
-              InkWell(
-                onTap: () => send(),
-                child: Material(
-                  color: Constant.kComponentBgColor,
+              Material(
+                color: Constant.kComponentBgColor,
+                borderRadius: BorderRadius.circular(16.0),
+                child: InkWell(
                   borderRadius: BorderRadius.circular(16.0),
+                  onTap: () {},
                   child: Container(
                     padding: const EdgeInsets.all(
                       12.0,
@@ -97,84 +117,119 @@ class _MessagesHomeState extends State<MessagesHome> {
             ],
           ),
         ),
-        // Expanded(
-        //   child: StreamProvider<List<Map<String, dynamic>>>(
-        //     create: (_) => FirebaseFirestore.instance
-        //         .collection('testData')
-        //         .orderBy('timestamp')
-        //         .snapshots()
-        //         .map(
-        //           (snap) => snap.docs.map((e) => e.data()).toList(),
-        //         ),
-        //     child: ListItem(),
-        //   ),
-        //   // child: ListView(),
-        // ),
+        Expanded(
+          child: _chats == null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation(Constant.kPrimaryColor),
+                      ),
+                      SizedBox(
+                        height: 13,
+                      ),
+                      Text(
+                        'Please Wait...',
+                        style: TextStyle(
+                          fontFamily: 'Barty',
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : _chats.length == 0
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/icon.png',
+                            width: (MediaQuery.of(context).size.width * 0.75),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            'Welcome',
+                            style: TextStyle(
+                              fontFamily: 'Haydes',
+                              fontSize: 62.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : SizedBox(),
+        ),
       ],
     );
   }
 
-  void send() {
-    TextEditingController _text = TextEditingController();
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text('send message...'),
-        content: Container(
-          width: 600.0,
-          child: TextFormField(
-            controller: _text,
-            obscureText: true,
-            textAlign: TextAlign.center,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: 'enter text...',
-              filled: true,
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Colors.transparent,
-                  width: 0,
-                ),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: Constant.kPrimaryColor,
-                  width: 2,
-                ),
-              ),
-            ),
-            maxLines: 1,
-            onChanged: (value) {},
-          ),
-        ),
-        actions: [
-          FlatButton(
-            onPressed: () async {
-              if (_text.text != '') {
-                String one = globalEncrypt(_text.text);
-                String two = globalEncrypt(one);
-                await FirebaseFirestore.instance.collection('testData').add({
-                  'message': two,
-                  'timestamp': DateTime.now(),
-                });
-                Navigator.of(context).pop();
-              }
-            },
-            color: Constant.kPrimaryColor,
-            child: Text(
-              'submit...',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 32.0,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // void send() {
+  //   TextEditingController _text = TextEditingController();
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => AlertDialog(
+  //       title: Text('send message...'),
+  //       content: Container(
+  //         width: 600.0,
+  //         child: TextFormField(
+  //           controller: _text,
+  //           obscureText: true,
+  //           textAlign: TextAlign.center,
+  //           autofocus: true,
+  //           decoration: InputDecoration(
+  //             hintText: 'enter text...',
+  //             filled: true,
+  //             enabledBorder: UnderlineInputBorder(
+  //               borderSide: BorderSide(
+  //                 color: Colors.transparent,
+  //                 width: 0,
+  //               ),
+  //             ),
+  //             focusedBorder: UnderlineInputBorder(
+  //               borderSide: BorderSide(
+  //                 color: Constant.kPrimaryColor,
+  //                 width: 2,
+  //               ),
+  //             ),
+  //           ),
+  //           maxLines: 1,
+  //           onChanged: (value) {},
+  //         ),
+  //       ),
+  //       actions: [
+  //         FlatButton(
+  //           onPressed: () async {
+  //             if (_text.text != '') {
+  //               String one = globalEncrypt(_text.text);
+  //               String two = globalEncrypt(one);
+  //               await FirebaseFirestore.instance.collection('testData').add({
+  //                 'message': two,
+  //                 'timestamp': DateTime.now(),
+  //               });
+  //               Navigator.of(context).pop();
+  //             }
+  //           },
+  //           color: Constant.kPrimaryColor,
+  //           child: Text(
+  //             'submit...',
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.bold,
+  //               fontSize: 32.0,
+  //               color: Colors.white,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 // class ListItem extends StatefulWidget {

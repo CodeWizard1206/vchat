@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
+import 'package:vchat/Models/ChatTileModel.dart';
 
 class FirebaseModel {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -27,7 +27,7 @@ class FirebaseModel {
           Constant.superUser.contact = userData.data()['contact'];
           Constant.superUser.username = userData.data()['username'];
           Constant.superUser.image = userData.data()['image'];
-          Constant.superUser.joinedOn = userData.data()['joinedOn'];
+          Constant.superUser.joinedOn = userData.data()['joinedOn'].toDate();
         } else {
           Constant.superUser.uid = _user.uid;
           Constant.superUser.contact = contact;
@@ -87,13 +87,13 @@ class FirebaseModel {
   }
 
   static Future<bool> updateUser(
-      String username, bool uploadImage, File image) async {
+      String username, bool uploadImage, File image, bool remove) async {
     String imageURL = Constant.superUser.image;
     String imageName =
         (Constant.superUser.uid + '.' + (image.path.split('.').last));
 
     try {
-      if (uploadImage) {
+      if (uploadImage || (image == null && remove)) {
         //Deleting Previous Image if any
         if (imageURL != null) {
           try {
@@ -151,16 +151,18 @@ class FirebaseModel {
         }
 
         //Uploading New Image to Firebase Storage
-        await _storage
-            .ref()
-            .child('profileImages/' + imageName)
-            .putFile(image)
-            .onComplete;
-        var uri = await _storage
-            .ref()
-            .child('profileImages/' + imageName)
-            .getDownloadURL();
-        imageURL = uri.toString();
+        if (!remove) {
+          await _storage
+              .ref()
+              .child('profileImages/' + imageName)
+              .putFile(image)
+              .onComplete;
+          var uri = await _storage
+              .ref()
+              .child('profileImages/' + imageName)
+              .getDownloadURL();
+          imageURL = uri.toString();
+        }
       }
 
       //Updating User Details on Firebase Database
@@ -182,5 +184,18 @@ class FirebaseModel {
       print(e.toString());
       return false;
     }
+  }
+
+  static Stream<List<ChatTileModel>> getAllChats() {
+    var _data = _firestore
+        .collection('userDatabase')
+        .doc(Constant.superUser.uid)
+        .collection('chats')
+        .orderBy('msgTime')
+        .snapshots()
+        .map((snap) =>
+            snap.docs.map((doc) => ChatTileModel.fromMap(doc)).toList());
+
+    return _data;
   }
 }
