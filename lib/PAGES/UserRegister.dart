@@ -126,6 +126,12 @@ class _UserRegisterHomeState extends State<UserRegisterHome> {
               content: Text('Failed to verify user, try again!'),
             ));
           }
+        } else {
+          FirebaseModel.storeCache();
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.of(context).popAndPushNamed('/home');
         }
       }
     }

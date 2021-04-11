@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/PAGES/LoginScreen.dart';
-import 'package:vchat/PAGES/Messages.dart';
+import 'package:vchat/PAGES/ChatHomeScreen.dart';
 import 'package:vchat/PAGES/UserRegister.dart';
 
 void main() async {
@@ -20,8 +20,6 @@ void main() async {
       defaultRoute = '/home';
       print(_cache.getString('userData'));
       Map<String, dynamic> _data = json.decode(_cache.getString('userData'));
-
-      print(_data);
 
       Constant.superUser.uid = _data['uid'];
       Constant.superUser.contact = _data['contact'];
@@ -50,7 +48,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'V Chat',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.grey,
         primaryColor: Constant.kPrimaryColor,
@@ -58,7 +55,7 @@ class MyApp extends StatelessWidget {
       initialRoute: this.defaultRoute,
       routes: {
         '/': (context) => LoginScreen(),
-        '/home': (context) => Messages(),
+        '/home': (context) => ChatHomeScreen(),
         '/userRegister': (context) => UserRegister(),
       },
     );

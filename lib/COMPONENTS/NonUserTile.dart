@@ -7,7 +7,7 @@ class NonUserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 2.0,
         horizontal: 10.0,

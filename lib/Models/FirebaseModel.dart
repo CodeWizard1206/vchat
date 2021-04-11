@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
+import 'package:vchat/MODELS/ChatDataModel.dart';
 import 'package:vchat/Models/ChatTileModel.dart';
 import 'package:vchat/Models/UserModel.dart';
 
@@ -75,10 +76,7 @@ class FirebaseModel {
       Constant.superUser.username = username;
       Constant.superUser.image = imageURL;
 
-      SharedPreferences _cache = await SharedPreferences.getInstance();
-
-      _cache.setBool('loggedIn', true);
-      _cache.setString('userData', json.encode(Constant.superUser.toJSON()));
+      storeCache();
 
       return true;
     } catch (e) {
@@ -175,10 +173,7 @@ class FirebaseModel {
       Constant.superUser.username = username;
       Constant.superUser.image = imageURL;
 
-      SharedPreferences _cache = await SharedPreferences.getInstance();
-
-      _cache.setBool('loggedIn', true);
-      _cache.setString('userData', json.encode(Constant.superUser.toJSON()));
+      storeCache();
 
       return true;
     } catch (e) {
@@ -196,6 +191,15 @@ class FirebaseModel {
     return users;
   }
 
+  static Future<void> updateUnread(String uid) async {
+    await _firestore
+        .collection('userDatabase')
+        .doc(Constant.superUser.uid)
+        .collection('chats')
+        .doc(uid)
+        .update({'unread': false});
+  }
+
   static Stream<List<ChatTileModel>> getAllChats() {
     var _data = _firestore
         .collection('userDatabase')
@@ -207,5 +211,23 @@ class FirebaseModel {
             snap.docs.map((doc) => ChatTileModel.fromMap(doc)).toList());
 
     return _data;
+  }
+
+  static Stream<List<ChatDataModel>> getChats(String dbName) {
+    var _data = _firestore
+        .collection(dbName)
+        .orderBy('msgTime')
+        .snapshots()
+        .map((snap) =>
+            snap.docs.map((doc) => ChatDataModel.fromDoc(doc)).toList());
+
+    return _data;
+  }
+
+  static Future<void> storeCache() async {
+    SharedPreferences _cache = await SharedPreferences.getInstance();
+
+    _cache.setBool('loggedIn', true);
+    _cache.setString('userData', json.encode(Constant.superUser.toJSON()));
   }
 }

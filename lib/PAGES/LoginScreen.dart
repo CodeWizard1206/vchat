@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:vchat/COMPONENTS/LoaderWidget.dart';
 import 'package:vchat/COMPONENTS/OTPSheet.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/FirebaseModel.dart';
@@ -232,25 +233,7 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
     return ModalProgressHUD(
       inAsyncCall: this.isLoading,
       opacity: 0.5,
-      progressIndicator: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(Constant.kPrimaryColor),
-          ),
-          SizedBox(
-            height: 13,
-          ),
-          Text(
-            'Please Wait...',
-            style: TextStyle(
-              fontFamily: 'Barty',
-              color: Colors.white,
-              fontSize: 20.0,
-            ),
-          ),
-        ],
-      ),
+      progressIndicator: LoaderWidget(),
       child: SafeArea(
         child: SingleChildScrollView(
           child: Container(

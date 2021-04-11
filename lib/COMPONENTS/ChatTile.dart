@@ -9,61 +9,93 @@ class ChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 1,
-          child: Padding(
+    return Container(
+      padding: const EdgeInsets.only(right: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                data.profileImage,
-                scale: double.maxFinite,
-              ),
+              backgroundImage: data.profileImage != null
+                  ? NetworkImage(
+                      data.profileImage,
+                    )
+                  : AssetImage('assets/images/user.png'),
             ),
           ),
-        ),
-        Expanded(
-          flex: 4,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(data.contactName),
-                  ),
-                  Text(
-                    DateFormat.jm().format(
-                      data.msgTime,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(data.message),
-                  ),
-                  Visibility(
-                    visible: data.unread,
-                    child: Material(
-                      elevation: 5.0,
-                      borderRadius: BorderRadius.circular(30.0),
-                      color: Constant.kPrimaryColor,
-                      child: Container(
-                        height: 5.0,
-                        width: 5.0,
+          Expanded(
+            flex: 4,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data.contactName,
+                        maxLines: 1,
+                        overflow: TextOverflow.clip,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    Text(
+                      DateFormat('dd').format(DateTime.now()) ==
+                              DateFormat('dd').format(data.msgTime)
+                          ? DateFormat.jm().format(data.msgTime)
+                          : data.msgTime.difference(DateTime.now()).inHours < 48
+                              ? 'Yesterday'
+                              : DateFormat('dd/MM/yy').format(data.msgTime),
+                      style: TextStyle(
+                        color: data.unread
+                            ? Constant.kPrimaryColor
+                            : Colors.black45,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data.message,
+                        maxLines: 2,
+                        overflow: TextOverflow.clip,
+                        style: TextStyle(
+                          fontWeight:
+                              data.unread ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 16,
+                          color: data.unread
+                              ? Constant.kPrimaryColor
+                              : Colors.black45,
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: data.unread,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Material(
+                          elevation: 5.0,
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Constant.kPrimaryColor,
+                          child: Container(
+                            height: 15.0,
+                            width: 15.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

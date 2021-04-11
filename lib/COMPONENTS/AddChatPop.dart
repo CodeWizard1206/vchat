@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AddChatPop extends StatelessWidget {
-  final List<Widget> nonUsers;
-  final List<Widget> existingUsers;
+  final List<Widget> userList;
 
   const AddChatPop({
     Key key,
-    this.existingUsers,
-    this.nonUsers,
+    this.userList,
   }) : super(key: key);
 
   @override
@@ -45,16 +43,7 @@ class AddChatPop extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: existingUsers,
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: nonUsers,
-                ),
-              ],
+              children: userList,
             ),
           ),
         ],
