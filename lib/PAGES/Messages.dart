@@ -7,6 +7,9 @@ import 'package:vchat/Constants.dart';
 import 'package:vchat/Models/ChatTileModel.dart';
 import 'package:vchat/Models/FirebaseModel.dart';
 import 'package:vchat/Models/UserModel.dart';
+import 'package:vchat/COMPONENTS/AddChatPop.dart';
+import 'package:vchat/COMPONENTS/NonUserTile.dart';
+import 'package:vchat/COMPONENTS/ExistingUserTile.dart';
 
 class Messages extends StatelessWidget {
   const Messages({Key key}) : super(key: key);
@@ -52,14 +55,19 @@ class _MessagesHomeState extends State<MessagesHome> {
           String num = i.value.replaceAll('-', '').replaceAll(' ', '');
           if (num.length >= 10) {
             num = num.substring((num.length - 10), num.length);
+            // if (!contacts.contains(num)) {
             contact.add(num);
-            nonUsers.add({
+            Map<String, dynamic> map = {
               'name': c.displayName,
               'contact': num,
-            });
+            };
+            nonUsers.add(map);
+            // }
           }
         }
       }
+
+      contact = contact.toSet().toList();
 
       _users = _users.where((user) {
         String con = user.contact;
@@ -77,119 +85,14 @@ class _MessagesHomeState extends State<MessagesHome> {
           .where((element) => contact.contains(element['contact']))
           .toList();
 
-      List<Widget> contactList = _users
-          .map(
-            (user) => Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 6.0,
-                horizontal: 10.0,
-              ),
-              child: InkWell(
-                onTap: () {},
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: NetworkImage(user.image),
-                      radius: 24,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          user.username.replaceFirst(' ', '\n'),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20.0,
-                            fontFamily: 'Ubuntu',
-                          ),
-                          overflow: TextOverflow.clip,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      FlutterIcons.send_fea,
-                      color: Constant.kPrimaryColor,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-          .toList();
+      List<dynamic> _displayList =
+          _users.map((user) => ExistingUserTile(user: user)).toList();
+
+      List<Widget> _nonList = [];
 
       for (Map<String, dynamic> non in nonUsers) {
-        contactList.add(
-          Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 2.0,
-              horizontal: 10.0,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage('assets/images/user.png'),
-                  radius: 24,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.maxFinite,
-                          child: Text(
-                            non['name'],
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              fontFamily: 'Ubuntu',
-                            ),
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-                        Text(
-                          non['contact'],
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontFamily: 'Ubuntu',
-                          ),
-                          overflow: TextOverflow.clip,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                RawMaterialButton(
-                  onPressed: () {},
-                  constraints: BoxConstraints(minHeight: 0, minWidth: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  elevation: 0,
-                  fillColor: Constant.kPrimaryColor,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 8.0, horizontal: 12.0),
-                    child: Text(
-                      'Invite',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        _nonList.add(
+          NonUserTile(user: non),
         );
       }
 
@@ -202,44 +105,9 @@ class _MessagesHomeState extends State<MessagesHome> {
             topRight: Radius.circular(10.0),
           ),
         ),
-        builder: (_) => Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 5.0,
-          ),
-          width: MediaQuery.of(context).size.width,
-          constraints: BoxConstraints(
-            maxHeight: (MediaQuery.of(context).size.height * 0.92),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                height: 5.0,
-                width: 40.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.grey,
-                ),
-                margin: const EdgeInsets.all(10.0),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(
-                  'Add New Chat',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22.0,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  children: contactList,
-                ),
-              ),
-            ],
-          ),
+        builder: (_) => AddChatPop(
+          existingUsers: _displayList,
+          nonUsers: _nonList,
         ),
       );
     } else {

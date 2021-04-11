@@ -60,7 +60,7 @@ class ChatTileModel {
       senderID: map['contact'],
       profileImage: map['profileImage'],
       contactName: map['contactName'],
-      msgTime: map['msgTime'],
+      msgTime: map['msgTime'].toDate(),
       message: map['message'],
       unread: map['unread'],
     );

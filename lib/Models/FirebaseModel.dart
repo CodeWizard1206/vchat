@@ -188,8 +188,6 @@ class FirebaseModel {
   }
 
   static Future<List<UserModel>> getContactList() async {
-    List<Map<String, dynamic>> data = [];
-
     var doc =
         await _firestore.collection('userDatabase').orderBy('username').get();
 
