@@ -6,8 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/MODELS/ChatDataModel.dart';
-import 'package:vchat/Models/ChatTileModel.dart';
-import 'package:vchat/Models/UserModel.dart';
+import 'package:vchat/MODELS/ChatTileModel.dart';
+import 'package:vchat/MODELS/UserModel.dart';
 
 class FirebaseModel {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;

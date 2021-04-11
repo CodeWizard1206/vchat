@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:vchat/Constants.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:vchat/Models/UserModel.dart';
+import 'package:vchat/MODELS/UserModel.dart';
+import 'package:vchat/PAGES/ChatScreen.dart';
 
 class ExistingUserTile extends StatelessWidget {
   final UserModel user;
@@ -15,7 +16,19 @@ class ExistingUserTile extends StatelessWidget {
         horizontal: 10.0,
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                uid: user.uid,
+                username: user.username,
+                contact: user.contact,
+                profileImage: user.image,
+              ),
+            ),
+          );
+        },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

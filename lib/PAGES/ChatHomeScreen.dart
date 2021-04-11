@@ -5,9 +5,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:vchat/COMPONENTS/LoaderWidget.dart';
 import 'package:vchat/Constants.dart';
-import 'package:vchat/Models/ChatTileModel.dart';
-import 'package:vchat/Models/FirebaseModel.dart';
-import 'package:vchat/Models/UserModel.dart';
+import 'package:vchat/MODELS/ChatTileModel.dart';
+import 'package:vchat/MODELS/FirebaseModel.dart';
+import 'package:vchat/MODELS/UserModel.dart';
 import 'package:vchat/COMPONENTS/AddChatPop.dart';
 import 'package:vchat/COMPONENTS/NonUserTile.dart';
 import 'package:vchat/COMPONENTS/ExistingUserTile.dart';
@@ -25,7 +25,9 @@ class ChatHomeScreen extends StatelessWidget {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: StreamProvider<List<ChatTileModel>>(
-              create: (_) => FirebaseModel.getAllChats(), child: ChatHome()),
+            create: (_) => FirebaseModel.getAllChats(),
+            child: ChatHome(),
+          ),
         ),
       ),
     );

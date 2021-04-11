@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vchat/COMPONENTS/LoaderWidget.dart';
+import 'package:vchat/COMPONENTS/MessageSenderTile.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/MODELS/ChatDataModel.dart';
 import 'package:vchat/MODELS/FirebaseModel.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class ChatScreen extends StatelessWidget {
   final String uid;
@@ -39,10 +41,72 @@ class ChatScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: SafeArea(
+          child: Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Icon(
+                        FlutterIcons.angle_left_faw5s,
+                        size: 32.0,
+                        color: Constant.kPrimaryColor,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        username,
+                        overflow: TextOverflow.clip,
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Barty',
+                            fontSize: 28),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(30.0),
+                      color: Constant.kPrimaryColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.8),
+                        child: CircleAvatar(
+                          backgroundColor: Constant.kPrimaryColor,
+                          backgroundImage: NetworkImage(profileImage),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: StreamProvider<List<ChatDataModel>>(
           create: (_) => FirebaseModel.getChats(chatDbName),
-          child: ChatBody(),
+          child: ChatBody(
+            uniqueKey: uniqueKey,
+          ),
         ),
       ),
     );
@@ -50,14 +114,14 @@ class ChatScreen extends StatelessWidget {
 }
 
 class ChatBody extends StatefulWidget {
-  ChatBody({Key key}) : super(key: key);
+  final String uniqueKey;
+  ChatBody({Key key, this.uniqueKey}) : super(key: key);
 
   @override
   _ChatBodyState createState() => _ChatBodyState();
 }
 
 class _ChatBodyState extends State<ChatBody> {
-  TextEditingController _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var _data = Provider.of<List<ChatDataModel>>(context);
@@ -72,39 +136,7 @@ class _ChatBodyState extends State<ChatBody> {
           Expanded(
             child: SizedBox(),
           ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    cursorColor: Constant.kPrimaryColor,
-                    controller: this._controller,
-                    decoration: InputDecoration(
-                      hintText: 'Type something...',
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Constant.kPrimaryColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Constant.kPrimaryColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          MessageSenderTile(),
         ],
       );
     } else {
@@ -113,39 +145,7 @@ class _ChatBodyState extends State<ChatBody> {
           Expanded(
             child: SizedBox(),
           ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    cursorColor: Constant.kPrimaryColor,
-                    controller: this._controller,
-                    decoration: InputDecoration(
-                      hintText: 'Type something...',
-                      filled: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Constant.kPrimaryColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Constant.kPrimaryColor,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          MessageSenderTile(),
         ],
       );
     }

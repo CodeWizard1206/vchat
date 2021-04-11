@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vchat/Models/UserModel.dart';
+import 'package:vchat/MODELS/UserModel.dart';
 
 class Constant {
   static const kPrimaryColor = Color(0xFF76BCFF); //Color(0xFF2196F3);
