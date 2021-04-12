@@ -49,7 +49,9 @@ class MessageSenderTile extends StatelessWidget {
               if (_focus.hasPrimaryFocus) {
                 _focus.unfocus();
               }
-              if (_controller.text != '') {}
+              if (_controller.text != '') {
+                onTap(_controller);
+              }
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),

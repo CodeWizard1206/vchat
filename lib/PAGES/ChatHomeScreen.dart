@@ -163,23 +163,6 @@ class _ChatHomeState extends State<ChatHome> {
             ),
             child: Row(
               children: [
-                InkWell(
-                  borderRadius: BorderRadius.circular(30.0),
-                  onTap: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: Constant.superUser.image != null
-                          ? NetworkImage(Constant.superUser.image)
-                          : AssetImage('assets/images/user.png'),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
                 Expanded(
                   child: Text(
                     'Chats',
@@ -228,6 +211,23 @@ class _ChatHomeState extends State<ChatHome> {
                         color: Constant.kPrimaryColor,
                         size: 18.0,
                       ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(30.0),
+                  onTap: () {},
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: Constant.superUser.image != null
+                          ? NetworkImage(Constant.superUser.image)
+                          : AssetImage('assets/images/user.png'),
                     ),
                   ),
                 ),

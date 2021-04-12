@@ -4,6 +4,8 @@ import 'package:vchat/COMPONENTS/LoaderWidget.dart';
 import 'package:vchat/COMPONENTS/MessageSenderTile.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/MODELS/ChatDataModel.dart';
+import 'package:vchat/MODELS/ChatTileModel.dart';
+import 'package:vchat/MODELS/EncrypterDecrypter.dart';
 import 'package:vchat/MODELS/FirebaseModel.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
@@ -25,7 +27,7 @@ class ChatScreen extends StatelessWidget {
     int chatContact =
         int.parse(contact.substring((contact.length - 10), contact.length));
 
-    int myContact = int.parse(contact.substring(
+    int myContact = int.parse(Constant.superUser.contact.substring(
         (Constant.superUser.contact.length - 10),
         Constant.superUser.contact.length));
 
@@ -105,7 +107,15 @@ class ChatScreen extends StatelessWidget {
         child: StreamProvider<List<ChatDataModel>>(
           create: (_) => FirebaseModel.getChats(chatDbName),
           child: ChatBody(
+            chat: ChatTileModel(
+              uid: uid,
+              contactName: username,
+              contact: contact,
+              profileImage: profileImage,
+              unread: false,
+            ),
             uniqueKey: uniqueKey,
+            dbName: chatDbName,
           ),
         ),
       ),
@@ -115,13 +125,27 @@ class ChatScreen extends StatelessWidget {
 
 class ChatBody extends StatefulWidget {
   final String uniqueKey;
-  ChatBody({Key key, this.uniqueKey}) : super(key: key);
+  final ChatTileModel chat;
+  final String dbName;
+  ChatBody({
+    Key key,
+    this.uniqueKey,
+    this.chat,
+    this.dbName,
+  }) : super(key: key);
 
   @override
   _ChatBodyState createState() => _ChatBodyState();
 }
 
 class _ChatBodyState extends State<ChatBody> {
+  Future<void> onTap(TextEditingController controller) async {
+    String msg = dynamicEncrypt(widget.uniqueKey, controller.text);
+    widget.chat.message = msg;
+
+    FirebaseModel.sendMessage(widget.chat, widget.dbName);
+  }
+
   @override
   Widget build(BuildContext context) {
     var _data = Provider.of<List<ChatDataModel>>(context);
@@ -136,16 +160,21 @@ class _ChatBodyState extends State<ChatBody> {
           Expanded(
             child: SizedBox(),
           ),
-          MessageSenderTile(),
+          MessageSenderTile(
+            onTap: onTap,
+          ),
         ],
       );
     } else {
+      FirebaseModel.updateUnread(widget.chat.uid);
       return Column(
         children: [
           Expanded(
             child: SizedBox(),
           ),
-          MessageSenderTile(),
+          MessageSenderTile(
+            onTap: onTap,
+          ),
         ],
       );
     }

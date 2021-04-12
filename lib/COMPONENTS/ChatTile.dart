@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/MODELS/ChatTileModel.dart';
+import 'package:vchat/MODELS/EncrypterDecrypter.dart';
 import 'package:vchat/PAGES/ChatScreen.dart';
 
 class ChatTile extends StatelessWidget {
@@ -10,6 +11,24 @@ class ChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int chatContact = int.parse(data.contact
+        .substring((data.contact.length - 10), data.contact.length));
+
+    int myContact = int.parse(Constant.superUser.contact.substring(
+        (Constant.superUser.contact.length - 10),
+        Constant.superUser.contact.length));
+
+    String chatDbName;
+    String uniqueKey;
+
+    if (chatContact < myContact) {
+      chatDbName = data.contact + Constant.superUser.contact;
+      uniqueKey = chatDbName + data.uid + Constant.superUser.uid;
+    } else {
+      chatDbName = Constant.superUser.contact + data.contact;
+      uniqueKey = chatDbName + Constant.superUser.uid + data.uid;
+    }
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -18,7 +37,7 @@ class ChatTile extends StatelessWidget {
             builder: (context) => ChatScreen(
               uid: data.uid,
               username: data.contactName,
-              contact: data.senderID,
+              contact: data.contact,
               profileImage: data.profileImage,
             ),
           ),
@@ -77,7 +96,7 @@ class ChatTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          data.message,
+                          dynamicDecrypt(uniqueKey, data.message),
                           maxLines: 2,
                           overflow: TextOverflow.clip,
                           style: TextStyle(

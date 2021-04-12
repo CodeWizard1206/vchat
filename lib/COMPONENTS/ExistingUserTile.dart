@@ -55,6 +55,7 @@ class ExistingUserTile extends StatelessWidget {
               FlutterIcons.send_fea,
               color: Constant.kPrimaryColor,
             ),
+            SizedBox(width: 20.0),
           ],
         ),
       ),

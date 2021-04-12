@@ -200,6 +200,45 @@ class FirebaseModel {
         .update({'unread': false});
   }
 
+  static Future<void> sendMessage(ChatTileModel chat, String dbName) async {
+    ChatDataModel data = ChatDataModel(
+      senderID: Constant.superUser.uid,
+      msgType: 'text',
+      msg: chat.message,
+      fileURL: null,
+      fileName: null,
+      msgDate: DateTime.now(),
+    );
+
+    chat.msgTime = data.msgDate;
+
+    try {
+      await _firestore.collection(dbName).add(data.toMap());
+      await _firestore
+          .collection('userDatabase')
+          .doc(Constant.superUser.uid)
+          .collection('chats')
+          .doc(chat.uid)
+          .set(chat.toMap());
+
+      await _firestore
+          .collection('userDatabase')
+          .doc(chat.uid)
+          .collection('chats')
+          .doc(Constant.superUser.uid)
+          .set(ChatTileModel(
+            contactName: Constant.superUser.username,
+            contact: Constant.superUser.contact,
+            profileImage: Constant.superUser.image,
+            msgTime: chat.msgTime,
+            message: chat.message,
+            unread: true,
+          ).toMap());
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   static Stream<List<ChatTileModel>> getAllChats() {
     var _data = _firestore
         .collection('userDatabase')

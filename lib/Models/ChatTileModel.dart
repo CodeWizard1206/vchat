@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatTileModel {
   String uid;
-  String senderID;
+  String contact;
   String profileImage;
   String contactName;
   DateTime msgTime;
@@ -11,7 +11,7 @@ class ChatTileModel {
 
   ChatTileModel({
     this.uid,
-    this.senderID,
+    this.contact,
     this.profileImage,
     this.contactName,
     this.msgTime,
@@ -21,7 +21,7 @@ class ChatTileModel {
 
   ChatTileModel copyWith({
     String uid,
-    String senderID,
+    String contact,
     String profileImage,
     String contactName,
     var msgTime,
@@ -30,7 +30,7 @@ class ChatTileModel {
   }) {
     return ChatTileModel(
       uid: uid ?? this.uid,
-      senderID: senderID ?? this.senderID,
+      contact: contact ?? this.contact,
       profileImage: profileImage ?? this.profileImage,
       contactName: contactName ?? this.contactName,
       msgTime: msgTime ?? this.msgTime,
@@ -41,7 +41,7 @@ class ChatTileModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'contact': senderID,
+      'contact': contact,
       'profileImage': profileImage,
       'contactName': contactName,
       'msgTime': msgTime,
@@ -57,7 +57,7 @@ class ChatTileModel {
 
     return ChatTileModel(
       uid: doc.id,
-      senderID: map['contact'],
+      contact: map['contact'],
       profileImage: map['profileImage'],
       contactName: map['contactName'],
       msgTime: map['msgTime'].toDate(),

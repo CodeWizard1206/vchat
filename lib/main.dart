@@ -18,7 +18,6 @@ void main() async {
   try {
     if (_cache.getBool('loggedIn')) {
       defaultRoute = '/home';
-      print(_cache.getString('userData'));
       Map<String, dynamic> _data = json.decode(_cache.getString('userData'));
 
       Constant.superUser.uid = _data['uid'];

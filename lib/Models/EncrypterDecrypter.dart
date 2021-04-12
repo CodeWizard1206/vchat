@@ -8,6 +8,48 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 final String passphrase =
     "dkjgfh^^(**&4546125t@sosy*^(*YAGg87sgusgg8j(*Y*GNIUHG*R*^*&TUYUYf4dhfl;56dlkjcsj79879Y^*&^(*yhguyGgVGHJH6434643C1D31313DS1V3S146684";
 
+String dynamicEncrypt(String uniqueKey, String plainText) {
+  try {
+    final salt = genRandomWithNonZero(8);
+    var keyndIV = deriveKeyAndIV(uniqueKey, salt);
+    final key = encrypt.Key(keyndIV.item1);
+    final iv = encrypt.IV(keyndIV.item2);
+
+    final encrypter = encrypt.Encrypter(
+        encrypt.AES(key, mode: encrypt.AESMode.cbc, padding: "PKCS7"));
+    final encrypted = encrypter.encrypt(plainText, iv: iv);
+    Uint8List encryptedBytesWithSalt = Uint8List.fromList(
+        createUint8ListFromString("Salted__") + salt + encrypted.bytes);
+    String levelOne = base64.encode(encryptedBytesWithSalt);
+    String levelTwo = globalEncrypt(levelOne);
+
+    return levelTwo;
+  } catch (error) {
+    throw error;
+  }
+}
+
+String dynamicDecrypt(String uniqueKey, String encrypted) {
+  try {
+    String levelTwo = globalDecrpyt(encrypted);
+    Uint8List encryptedBytesWithSalt = base64.decode(levelTwo);
+
+    Uint8List encryptedBytes =
+        encryptedBytesWithSalt.sublist(16, encryptedBytesWithSalt.length);
+    final salt = encryptedBytesWithSalt.sublist(8, 16);
+    var keyndIV = deriveKeyAndIV(uniqueKey, salt);
+    final key = encrypt.Key(keyndIV.item1);
+    final iv = encrypt.IV(keyndIV.item2);
+
+    final encrypter = encrypt.Encrypter(
+        encrypt.AES(key, mode: encrypt.AESMode.cbc, padding: "PKCS7"));
+    final levelOne = encrypter.decrypt64(base64.encode(encryptedBytes), iv: iv);
+    return levelOne;
+  } catch (error) {
+    throw error;
+  }
+}
+
 String globalEncrypt(String plainText) {
   try {
     final salt = genRandomWithNonZero(8);
