@@ -47,11 +47,11 @@ class FirebaseModel {
   static Future<bool> registerUser(
       String username, bool uploadImage, File image) async {
     String imageURL;
-    String imageName =
-        (Constant.superUser.uid + '.' + (image.path.split('.').last));
 
     try {
       if (uploadImage) {
+        String imageName =
+            (Constant.superUser.uid + '.' + (image.path.split('.').last));
         await _storage
             .ref()
             .child('profileImages/' + imageName)
@@ -88,11 +88,11 @@ class FirebaseModel {
   static Future<bool> updateUser(
       String username, bool uploadImage, File image, bool remove) async {
     String imageURL = Constant.superUser.image;
-    String imageName =
-        (Constant.superUser.uid + '.' + (image.path.split('.').last));
 
     try {
       if (uploadImage || (image == null && remove)) {
+        String imageName =
+            (Constant.superUser.uid + '.' + (image.path.split('.').last));
         //Deleting Previous Image if any
         if (imageURL != null) {
           try {
@@ -192,6 +192,7 @@ class FirebaseModel {
   }
 
   static Future<void> updateUnread(String uid) async {
+    print(uid);
     await _firestore
         .collection('userDatabase')
         .doc(Constant.superUser.uid)
@@ -255,7 +256,7 @@ class FirebaseModel {
   static Stream<List<ChatDataModel>> getChats(String dbName) {
     var _data = _firestore
         .collection(dbName)
-        .orderBy('msgTime')
+        .orderBy('msgDate')
         .snapshots()
         .map((snap) =>
             snap.docs.map((doc) => ChatDataModel.fromDoc(doc)).toList());

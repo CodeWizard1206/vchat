@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vchat/COMPONENTS/LoaderWidget.dart';
 import 'package:vchat/COMPONENTS/MessageSenderTile.dart';
+import 'package:vchat/COMPONENTS/SenderChatBox.dart';
+import 'package:vchat/COMPONENTS/ReeiverChatBox.dart';
 import 'package:vchat/Constants.dart';
 import 'package:vchat/MODELS/ChatDataModel.dart';
 import 'package:vchat/MODELS/ChatTileModel.dart';
@@ -43,6 +45,7 @@ class ChatScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Constant.kComponentBgColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
         child: SafeArea(
@@ -144,6 +147,8 @@ class _ChatBodyState extends State<ChatBody> {
     widget.chat.message = msg;
 
     FirebaseModel.sendMessage(widget.chat, widget.dbName);
+
+    controller.text = '';
   }
 
   @override
@@ -170,7 +175,53 @@ class _ChatBodyState extends State<ChatBody> {
       return Column(
         children: [
           Expanded(
-            child: SizedBox(),
+            child: ListView(
+              children: _data
+                  .map(
+                    (chat) => _data.indexOf(chat) == 0
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(height: 12.0),
+                              chat.senderID != Constant.superUser.uid
+                                  ? ReceiverChatBox(
+                                      chat: chat,
+                                      uniqueKey: widget.uniqueKey,
+                                    )
+                                  : SenderChatBox(
+                                      chat: chat,
+                                      uniqueKey: widget.uniqueKey,
+                                    ),
+                            ],
+                          )
+                        : _data.indexOf(chat) == (_data.length - 1)
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  chat.senderID != Constant.superUser.uid
+                                      ? ReceiverChatBox(
+                                          chat: chat,
+                                          uniqueKey: widget.uniqueKey,
+                                        )
+                                      : SenderChatBox(
+                                          chat: chat,
+                                          uniqueKey: widget.uniqueKey,
+                                        ),
+                                  SizedBox(height: 12.0),
+                                ],
+                              )
+                            : chat.senderID != Constant.superUser.uid
+                                ? ReceiverChatBox(
+                                    chat: chat,
+                                    uniqueKey: widget.uniqueKey,
+                                  )
+                                : SenderChatBox(
+                                    chat: chat,
+                                    uniqueKey: widget.uniqueKey,
+                                  ),
+                  )
+                  .toList(),
+            ),
           ),
           MessageSenderTile(
             onTap: onTap,

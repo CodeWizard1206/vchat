@@ -57,6 +57,10 @@ class _ChatHomeState extends State<ChatHome> {
       Iterable<Contact> contacts =
           await ContactsService.getContacts(withThumbnails: false);
 
+      _users = _users
+          .where((element) => element.uid != Constant.superUser.uid)
+          .toList();
+
       for (Contact c in contacts) {
         Iterable<Item> phone = c.phones;
 
