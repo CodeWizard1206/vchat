@@ -9,6 +9,7 @@ class ChatMessageBlock extends StatelessWidget {
   final ChatDataModel currentChat;
   final String uniqueKey;
   final String image;
+  final String uid;
 
   int currentIndex;
   int nextIndex;
@@ -21,6 +22,7 @@ class ChatMessageBlock extends StatelessWidget {
     this.currentChat,
     this.uniqueKey,
     this.image,
+    this.uid,
   }) : super(key: key) {
     currentIndex = dataList.indexOf(currentChat);
     nextIndex = currentIndex + 1;
@@ -43,12 +45,42 @@ class ChatMessageBlock extends StatelessWidget {
     }
   }
 
-  bool doAddSeenStatus(bool isLast) {
+  Widget doAddSeenStatus(bool isLast) {
     if (isLast) {
-      return currentChat.senderID != Constant.superUser.uid;
+      if (currentChat.senderID == Constant.superUser.uid) {
+        return StreamBuilder(
+          initialData: true,
+          stream: FirebaseModel.getUnreadStatus(uid),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.done && snap.data) {
+              return CircleAvatar(
+                radius: 7.0,
+                backgroundColor: Colors.transparent,
+                backgroundImage: image != null
+                    ? NetworkImage(image)
+                    : AssetImage('assets/images/user.png'),
+              );
+            } else {
+              return SizedBox();
+            }
+          },
+        );
+      } else {
+        return SizedBox();
+      }
     } else {
-      return currentChat.senderID != Constant.superUser.uid &&
-          currentChat.senderID != dataList.elementAt(nextIndex).senderID;
+      if (currentChat.senderID == Constant.superUser.uid &&
+          (currentChat.senderID != dataList.elementAt(nextIndex).senderID)) {
+        return CircleAvatar(
+          radius: 7.0,
+          backgroundColor: Colors.transparent,
+          backgroundImage: image != null
+              ? NetworkImage(image)
+              : AssetImage('assets/images/user.png'),
+        );
+      } else {
+        return SizedBox();
+      }
     }
   }
 
@@ -81,20 +113,12 @@ class ChatMessageBlock extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    doAddSeenStatus(currentIndex == (dataList.length - 1))
-                        ? CircleAvatar(
-                            radius: 7.0,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: image != null
-                                ? NetworkImage(image)
-                                : AssetImage('assets/images/user.png'),
-                          )
-                        : SizedBox(),
-                    SizedBox(width: 4.0),
                     Text(
                       DateFormat.jm().format(currentChat.msgDate),
                       style: TextStyle(color: Colors.black54),
                     ),
+                    SizedBox(width: 4.0),
+                    doAddSeenStatus(currentIndex == (dataList.length - 1)),
                   ],
                 ),
               )

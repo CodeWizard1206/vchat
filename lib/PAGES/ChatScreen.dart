@@ -179,6 +179,7 @@ class _ChatBodyState extends State<ChatBody> {
                         currentChat: chat,
                         uniqueKey: widget.uniqueKey,
                         image: widget.chat.profileImage,
+                        uid: widget.chat.uid,
                       );
                     },
                   ).toList(),

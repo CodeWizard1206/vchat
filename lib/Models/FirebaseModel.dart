@@ -246,6 +246,18 @@ class FirebaseModel {
     return _data;
   }
 
+  static Stream<bool> getUnreadStatus(String uid) {
+    var data = _firestore
+        .collection('userDatabase')
+        .doc(uid)
+        .collection('chats')
+        .doc(Constant.superUser.uid)
+        .snapshots()
+        .map((event) => !(event.data()['unread']));
+
+    return data;
+  }
+
   static Stream<List<ChatDataModel>> getChats(String dbName) {
     var _data = _firestore
         .collection(dbName)
