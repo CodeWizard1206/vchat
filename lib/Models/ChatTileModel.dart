@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class ChatTileModel {
   String uid;

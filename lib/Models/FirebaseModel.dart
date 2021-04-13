@@ -1,13 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vchat/Constants.dart';
-import 'package:vchat/MODELS/ChatDataModel.dart';
-import 'package:vchat/MODELS/ChatTileModel.dart';
-import 'package:vchat/MODELS/UserModel.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class FirebaseModel {
   static FirebaseFirestore _firestore = FirebaseFirestore.instance;

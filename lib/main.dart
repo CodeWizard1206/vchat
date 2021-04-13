@@ -1,13 +1,6 @@
-import 'dart:convert';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vchat/Constants.dart';
-import 'package:vchat/PAGES/LoginScreen.dart';
-import 'package:vchat/PAGES/ChatHomeScreen.dart';
-import 'package:vchat/PAGES/UserRegister.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
+import 'package:vchat/EXPORTS/Pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,11 +1,6 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:vchat/Constants.dart';
-import 'package:vchat/MODELS/FirebaseModel.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class UserRegister extends StatelessWidget {
   const UserRegister({Key key}) : super(key: key);

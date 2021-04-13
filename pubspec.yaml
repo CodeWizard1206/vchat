@@ -30,7 +30,6 @@ dependencies:
   contacts_service: ^0.4.6
   permission_handler: ^5.0.1+1
   flutter_local_notifications: ^1.4.4+4
-  path_provider: ^1.6.14
 
 dev_dependencies:
   flutter_test:
@@ -40,10 +39,8 @@ flutter:
 
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-  #   - images/a_dot_ham.jpeg
 
   fonts:
     - family: Ubuntu

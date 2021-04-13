@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:vchat/Constants.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class MessageSenderTile extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();

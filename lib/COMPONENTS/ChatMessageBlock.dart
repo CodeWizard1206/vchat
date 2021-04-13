@@ -1,10 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:vchat/COMPONENTS/ChatDateBox.dart';
-import 'package:vchat/COMPONENTS/ReeiverChatBox.dart';
-import 'package:vchat/COMPONENTS/SenderChatBox.dart';
-import 'package:vchat/Constants.dart';
-import 'package:vchat/MODELS/ChatDataModel.dart';
+import 'package:vchat/EXPORTS/Components.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 // ignore: must_be_immutable
 class ChatMessageBlock extends StatelessWidget {

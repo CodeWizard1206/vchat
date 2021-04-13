@@ -1,19 +1,7 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:vchat/COMPONENTS/ChatDateBox.dart';
-import 'package:vchat/COMPONENTS/ChatMessageBlock.dart';
-import 'package:vchat/COMPONENTS/LoaderWidget.dart';
-import 'package:vchat/COMPONENTS/MessageSenderTile.dart';
-import 'package:vchat/COMPONENTS/SenderChatBox.dart';
-import 'package:vchat/COMPONENTS/ReeiverChatBox.dart';
-import 'package:vchat/Constants.dart';
-import 'package:vchat/MODELS/ChatDataModel.dart';
-import 'package:vchat/MODELS/ChatTileModel.dart';
-import 'package:vchat/MODELS/EncrypterDecrypter.dart';
-import 'package:vchat/MODELS/FirebaseModel.dart';
-import 'package:flutter_icons/flutter_icons.dart';
+import 'package:vchat/EXPORTS/Components.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class ChatScreen extends StatelessWidget {
   final String uid;

@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:vchat/Constants.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:vchat/MODELS/UserModel.dart';
-import 'package:vchat/PAGES/ChatScreen.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
+import 'package:vchat/EXPORTS/Pages.dart';
 
 class ExistingUserTile extends StatelessWidget {
   final UserModel user;

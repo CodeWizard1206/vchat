@@ -1,18 +1,7 @@
-import 'package:contacts_service/contacts_service.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:vchat/COMPONENTS/LoaderWidget.dart';
-import 'package:vchat/Constants.dart';
-import 'package:vchat/MODELS/ChatTileModel.dart';
-import 'package:vchat/MODELS/FirebaseModel.dart';
-import 'package:vchat/MODELS/UserModel.dart';
-import 'package:vchat/COMPONENTS/AddChatPop.dart';
-import 'package:vchat/COMPONENTS/NonUserTile.dart';
-import 'package:vchat/COMPONENTS/ExistingUserTile.dart';
-import 'package:vchat/COMPONENTS/ChatTile.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:vchat/EXPORTS/Components.dart';
+import 'package:vchat/EXPORTS/Flutter.dart';
+import 'package:vchat/EXPORTS/Models.dart';
+import 'package:vchat/EXPORTS/Packages.dart';
 
 class ChatHomeScreen extends StatelessWidget {
   const ChatHomeScreen({Key key}) : super(key: key);
