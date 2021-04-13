@@ -29,19 +29,16 @@ class SenderChatBox extends StatelessWidget {
             ),
             color: Constant.kPrimaryColor,
             elevation: 5.0,
-            child: Flexible(
-              child: Container(
-                constraints: BoxConstraints(
-                  minWidth: 10.0,
-                  maxWidth: (MediaQuery.of(context).size.width * 0.82),
-                ),
-                padding: const EdgeInsets.all(10.0),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  dynamicDecrypt(uniqueKey, chat.msg),
-                  softWrap: true,
-                  style: TextStyle(fontSize: 16),
-                ),
+            child: Container(
+              constraints: BoxConstraints(
+                minWidth: 50.0,
+              ),
+              padding: const EdgeInsets.all(10.0),
+              alignment: Alignment.centerRight,
+              child: Text(
+                dynamicDecrypt(uniqueKey, chat.msg),
+                softWrap: true,
+                style: TextStyle(fontSize: 16),
               ),
             ),
           ),

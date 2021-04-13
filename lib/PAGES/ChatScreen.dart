@@ -1,5 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:vchat/COMPONENTS/ChatDateBox.dart';
+import 'package:vchat/COMPONENTS/ChatMessageBlock.dart';
 import 'package:vchat/COMPONENTS/LoaderWidget.dart';
 import 'package:vchat/COMPONENTS/MessageSenderTile.dart';
 import 'package:vchat/COMPONENTS/SenderChatBox.dart';
@@ -176,51 +180,22 @@ class _ChatBodyState extends State<ChatBody> {
         children: [
           Expanded(
             child: ListView(
-              children: _data
-                  .map(
-                    (chat) => _data.indexOf(chat) == 0
-                        ? Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(height: 12.0),
-                              chat.senderID != Constant.superUser.uid
-                                  ? ReceiverChatBox(
-                                      chat: chat,
-                                      uniqueKey: widget.uniqueKey,
-                                    )
-                                  : SenderChatBox(
-                                      chat: chat,
-                                      uniqueKey: widget.uniqueKey,
-                                    ),
-                            ],
-                          )
-                        : _data.indexOf(chat) == (_data.length - 1)
-                            ? Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  chat.senderID != Constant.superUser.uid
-                                      ? ReceiverChatBox(
-                                          chat: chat,
-                                          uniqueKey: widget.uniqueKey,
-                                        )
-                                      : SenderChatBox(
-                                          chat: chat,
-                                          uniqueKey: widget.uniqueKey,
-                                        ),
-                                  SizedBox(height: 12.0),
-                                ],
-                              )
-                            : chat.senderID != Constant.superUser.uid
-                                ? ReceiverChatBox(
-                                    chat: chat,
-                                    uniqueKey: widget.uniqueKey,
-                                  )
-                                : SenderChatBox(
-                                    chat: chat,
-                                    uniqueKey: widget.uniqueKey,
-                                  ),
-                  )
-                  .toList(),
+              reverse: true,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: _data.map(
+                    (chat) {
+                      return ChatMessageBlock(
+                        dataList: _data,
+                        currentChat: chat,
+                        uniqueKey: widget.uniqueKey,
+                        image: widget.chat.profileImage,
+                      );
+                    },
+                  ).toList(),
+                ),
+              ],
             ),
           ),
           MessageSenderTile(

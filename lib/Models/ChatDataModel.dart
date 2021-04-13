@@ -41,7 +41,6 @@ class ChatDataModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'chatId': chatId,
       'senderID': senderID,
       'msgType': msgType,
       'msg': msg,

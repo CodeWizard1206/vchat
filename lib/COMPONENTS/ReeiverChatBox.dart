@@ -30,8 +30,7 @@ class ReceiverChatBox extends StatelessWidget {
             elevation: 5.0,
             child: Container(
               constraints: BoxConstraints(
-                minWidth: 10.0,
-                maxWidth: (MediaQuery.of(context).size.width * 0.82),
+                minWidth: 50.0,
               ),
               padding: const EdgeInsets.all(10.0),
               alignment: Alignment.centerLeft,

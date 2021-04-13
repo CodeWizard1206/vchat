@@ -192,7 +192,6 @@ class FirebaseModel {
   }
 
   static Future<void> updateUnread(String uid) async {
-    print(uid);
     await _firestore
         .collection('userDatabase')
         .doc(Constant.superUser.uid)
